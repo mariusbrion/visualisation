@@ -3,28 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annexe Portfolio - Accessibilité École</title>
+    <title>Annexe Portfolio - Vue en Coupe des Cartes Isochrones</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            background-color: #f4f4f4;
+            min-height: 100vh;
             margin: 0;
             padding: 20px;
+            overflow-x: hidden;
         }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+        }
+
         h1 {
+            font-size: 2rem;
             color: #333;
             margin-bottom: 20px;
         }
+
         .map-container {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            margin: 0 auto;
             border: 2px solid #333;
-            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         .map-container img {
             position: absolute;
             top: 0;
@@ -32,82 +46,154 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 10px;
         }
+
         #main-map {
             z-index: 1;
         }
+
         .overlay-map {
             z-index: 2;
             display: none;
-            opacity: 0.7;
+            opacity: 0.85;
+            transition: opacity 0.3s ease;
         }
+
+        .overlay-map:hover {
+            opacity: 1;
+        }
+
+        .overlay-map.animate {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 0.85;
+                transform: translateY(0);
+            }
+        }
+
         .buttons {
             margin-top: 20px;
             display: flex;
             gap: 10px;
+            justify-content: center;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007BFF;
+
+        .button {
+            background-color: #007bff;
             color: white;
             border: none;
+            padding: 10px 20px;
+            font-size: 16px;
             border-radius: 5px;
-            transition: background-color 0.3s;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        button:hover {
+
+        .button:hover {
             background-color: #0056b3;
         }
-        button.active {
+
+        .button.active {
             background-color: #28a745;
+        }
+
+        .description {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .map-container {
+                height: 300px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Accessibilité à l'École</h1>
-    <div class="map-container">
-        <img id="main-map" src="carte_principale.png" alt="Carte principale de l'école">
-        <img id="pedestrian-map" class="overlay-map" src="carte_pieton.png" alt="Carte isochrone marche">
-        <img id="bike-map" class="overlay-map" src="carte_velo.png" alt="Carte isochrone vélo">
-        <img id="bus-map" class="overlay-map" src="carte_voiture.png" alt="Carte isochrone bus">
-    </div>
-    <div class="buttons">
-        <button onclick="showMap('pedestrian-map')" id="pedestrian-btn">Marche</button>
-        <button onclick="showMap('bike-map')" id="bike-btn">Vélo</button>
-        <button onclick="showMap('bus-map')" id="bus-btn">Bus</button>
+    <div class="container">
+        <h1>Vue en Coupe de l'Accessibilité de l'École</h1>
+        <div class="map-container">
+            <img id="main-map" src="carte_principale.png" alt="Carte principale de l'école">
+            <img id="pieton-map" class="overlay-map" src="carte_pieton.png" alt="Carte isochrone piéton">
+            <img id="velo-map" class="overlay-map" src="carte_velo.png" alt="Carte isochrone vélo">
+            <img id="bus-map" class="overlay-map" src="carte_voiture.png" alt="Carte isochrone bus">
+        </div>
+        <div class="buttons">
+            <button class="button active" id="pieton-btn" onclick="showMap('pieton-map')">Piéton</button>
+            <button class="button" id="velo-btn" onclick="showMap('velo-map')">Vélo</button>
+            <button class="button" id="bus-btn" onclick="showMap('bus-map')">Bus</button>
+        </div>
+        <p class="description">Vue en coupe des cartes isochrones montrant l'accessibilité de l'école à pied, à vélo et en bus. Utilisez les boutons pour afficher chaque calque.</p>
     </div>
 
     <script>
-        let activeMap = null;
-        let activeButton = null;
+        let activeMap = 'pieton-map';
+        let activeButton = document.getElementById('pieton-btn');
 
+        // Fonction pour afficher une carte spécifique
         function showMap(mapId) {
-            // Hide all overlay maps
+            // Masquer toutes les cartes overlay
             document.querySelectorAll('.overlay-map').forEach(map => {
                 map.style.display = 'none';
+                map.classList.remove('animate');
             });
 
-            // Remove active class from all buttons
-            document.querySelectorAll('.buttons button').forEach(btn => {
+            // Retirer la classe active de tous les boutons
+            document.querySelectorAll('.button').forEach(btn => {
                 btn.classList.remove('active');
             });
 
-            if (activeMap === mapId) {
-                // If clicking the same map, hide it (toggle off)
-                activeMap = null;
-            } else {
-                // Show the selected map
+            // Afficher la carte sélectionnée
+            const map = document.getElementById(mapId);
+            map.style.display = 'block';
+            activeMap = mapId;
+
+            // Mettre en surbrillance le bouton actif
+            const btn = document.getElementById(mapId.replace('map', 'btn'));
+            btn.classList.add('active');
+            activeButton = btn;
+        }
+
+        // Animation initiale au chargement
+        const maps = ['pieton-map', 'velo-map', 'bus-map'];
+        maps.forEach((mapId, index) => {
+            setTimeout(() => {
+                document.querySelectorAll('.overlay-map').forEach(map => {
+                    map.style.display = 'none';
+                    map.classList.remove('animate');
+                });
                 const map = document.getElementById(mapId);
                 map.style.display = 'block';
-                activeMap = mapId;
+                map.classList.add('animate');
+            }, index * 500);
+        });
 
-                // Highlight the active button
-                const btn = document.getElementById(mapId.replace('map', 'btn'));
-                btn.classList.add('active');
-                activeButton = btn;
-            }
-        }
+        // Après l'animation, initialiser avec la carte piéton
+        setTimeout(() => {
+            document.querySelectorAll('.overlay-map').forEach(map => {
+                map.style.display = 'none';
+                map.classList.remove('animate');
+            });
+            showMap('pieton-map');
+        }, 1500); // Après la fin de l'animation (3 * 500ms)
     </script>
 </body>
 </html>
