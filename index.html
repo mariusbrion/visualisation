@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annexe Portfolio - Cartes Isochrones avec Animation</title>
+    <title>Annexe Portfolio - Vue en Coupe des Cartes Isochrones</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,7 +20,6 @@
             text-align: center;
             max-width: 800px;
             padding: 20px;
-            position: relative;
         }
 
         h1 {
@@ -29,7 +28,7 @@
             margin-bottom: 20px;
         }
 
-        .main-map-container {
+        .map-container {
             position: relative;
             width: 100%;
             max-width: 600px;
@@ -37,13 +36,16 @@
             margin: 0 auto;
         }
 
-        .cards-stack {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .main-map {
             width: 100%;
             height: 100%;
-            z-index: 1;
+            background-image: url('carte_principale.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            z-index: 0;
         }
 
         .card {
@@ -53,83 +55,56 @@
             background-size: cover;
             background-position: center;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(-300px);
+            opacity: 0; /* Commence invisible */
+            animation: fadeIn 0.5s ease forwards; /* Animation d'apparition */
+            pointer-events: none; /* Désactive les interactions pendant l'animation */
         }
 
-        .card.animate {
-            animation: slideIn 1s ease-out forwards;
+        .card.active {
+            opacity: 0.85;
+            pointer-events: auto; /* Active les interactions après l'animation */
+        }
+
+        .card:hover {
+            opacity: 1;
         }
 
         .card.pieton {
             background-image: url('carte_pieton.png');
-            animation-delay: 0s;
-            z-index: 3;
+            animation-delay: 0.2s;
         }
 
         .card.velo {
             background-image: url('carte_velo.png');
-            animation-delay: 0.5s;
-            z-index: 2;
+            animation-delay: 0.4s;
         }
 
         .card.bus {
-            background-image: url('carte_bus.png');
-            animation-delay: 1s;
-            z-index: 1;
+            background-image: url('carte_voiture.png');
+            animation-delay: 0.6s;
         }
 
-        .card:hover {
-            transform: translateY(-10px) scale(1.05);
-            opacity: 1;
-        }
-
-        @keyframes slideIn {
-            0% {
-                transform: translateY(-300px);
+        @keyframes fadeIn {
+            from {
                 opacity: 0;
+                transform: translateY(20px);
             }
-            100% {
-                transform: translateY(0);
+            to {
                 opacity: 0.85;
+                transform: translateY(0);
             }
-        }
-
-        .card.hidden {
-            opacity: 0;
-            pointer-events: none;
-            display: none; /* Ajouté pour éviter toute superposition */
-        }
-
-        .main-map {
-            width: 100%;
-            height: 100%;
-            background-image: url('carte_pieton.png');
-            background-size: cover;
-            background-position: center;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: background-image 0.3s ease;
-            position: relative;
-            z-index: 0;
         }
 
         .buttons {
             margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
         }
 
         .button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            color: #fff;
             background-color: #007bff;
+            color: white;
             border: none;
+            padding: 10px 20px;
+            margin: 5px;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -139,10 +114,6 @@
             background-color: #0056b3;
         }
 
-        .button.active {
-            background-color: #28a745;
-        }
-
         .description {
             margin-top: 20px;
             font-size: 1rem;
@@ -150,97 +121,57 @@
         }
 
         @media (max-width: 600px) {
-            .main-map-container {
-                max-width: 300px;
-                height: 200px;
+            .map-container {
+                height: 300px;
             }
 
             h1 {
                 font-size: 1.5rem;
-            }
-
-            .button {
-                padding: 8px 15px;
-                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Accessibilité de l'École par Moyen de Transport</h1>
-        <div class="main-map-container">
-            <div class="cards-stack">
-                <div class="card pieton" data-transport="Pieton"></div>
-                <div class="card velo" data-transport="Velo"></div>
-                <div class="card bus" data-transport="Bus"></div>
-            </div>
-            <div class="main-map" id="main-map"></div>
+        <h1>Vue en Coupe de l'Accessibilité de l'École</h1>
+        <div class="map-container">
+            <div class="main-map"></div>
+            <div class="card pieton" data-transport="Pieton"></div>
+            <div class="card velo" data-transport="Velo"></div>
+            <div class="card bus" data-transport="Bus"></div>
         </div>
         <div class="buttons">
-            <button class="button active" data-layer="Pieton">Piétons</button>
-            <button class="button" data-layer="Velo">Vélo</button>
-            <button class="button" data-layer="Bus">Bus</button>
+            <button class="button" onclick="showLayer('pieton')">Piéton</button>
+            <button class="button" onclick="showLayer('velo')">Vélo</button>
+            <button class="button" onclick="showLayer('bus')">Bus</button>
         </div>
-        <p class="description">Cartes isochrones illustrant l'accessibilité de l'école à pied, à vélo et en bus. Cliquez sur les boutons pour changer de calque.</p>
+        <p class="description">Vue en coupe des cartes isochrones montrant l'accessibilité de l'école à pied, à vélo et en bus. Utilisez les boutons pour afficher chaque calque.</p>
     </div>
 
     <script>
-        window.addEventListener('load', () => {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.classList.add('animate');
-            });
-
-            setTimeout(() => {
-                // Masquer tous les calques après l'animation
-                cards.forEach(card => {
-                    card.classList.add('hidden');
-                    card.classList.remove('animate'); // Supprime l'animation pour éviter des conflits
-                });
-
-                // Afficher le calque par défaut (Piéton) sur la carte principale
-                const mainMap = document.getElementById('main-map');
-                mainMap.style.backgroundImage = `url('carte_pieton.png')`;
-            }, 2500); // Fin de l'animation après 2,5 secondes
-        });
-
-        const buttons = document.querySelectorAll('.button');
-        const mainMap = document.getElementById('main-map');
         const cards = document.querySelectorAll('.card');
+        const buttons = document.querySelectorAll('.button');
 
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                const layer = button.dataset.layer;
-                const imageUrl = layer === 'Pieton' ? 'carte_pieton.png' :
-                                layer === 'Velo' ? 'carte_velo.png' : 'carte_bus.png';
-
-                // Mettre à jour l'image de la carte principale
-                mainMap.style.backgroundImage = `url('${imageUrl}')`;
-
-                // Mettre à jour l'état des boutons
-                buttons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-
-                // Masquer tous les calques animés
-                cards.forEach(card => {
-                    card.classList.add('hidden');
-                });
+        // Fonction pour afficher un calque spécifique
+        function showLayer(layer) {
+            cards.forEach(card => {
+                if (card.classList.contains(layer)) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
             });
-        });
+        }
 
-        cards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.zIndex = 10;
-                card.style.opacity = 1;
+        // Activer les interactions après l'animation
+        setTimeout(() => {
+            cards.forEach(card => {
+                card.style.pointerEvents = 'auto';
             });
+        }, 1000); // Délai après la fin de l'animation (0.6s + 0.4s pour sécurité)
 
-            card.addEventListener('mouseleave', () => {
-                card.style.zIndex = card.dataset.transport === 'Pieton' ? 3 : 
-                                    card.dataset.transport === 'Velo' ? 2 : 1;
-                card.style.opacity = 0.85;
-            });
-        });
+        // Initialiser avec le calque piéton actif
+        showLayer('pieton');
     </script>
 </body>
 </html>
