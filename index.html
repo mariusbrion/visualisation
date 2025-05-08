@@ -55,15 +55,12 @@
             background-size: cover;
             background-position: center;
             border-radius: 10px;
-            opacity: 0; /* Commence invisible */
-            animation: fadeIn 0.5s ease forwards; /* Animation d'apparition */
-            pointer-events: none; /* Désactive les interactions pendant l'animation */
+            opacity: 0;
             transition: opacity 0.3s ease;
         }
 
         .card.active {
             opacity: 0.85;
-            pointer-events: auto; /* Active les interactions après l'animation */
         }
 
         .card:hover {
@@ -72,17 +69,14 @@
 
         .card.pieton {
             background-image: url('carte_pieton.png');
-            animation-delay: 0.2s;
         }
 
         .card.velo {
             background-image: url('carte_velo.png');
-            animation-delay: 0.4s;
         }
 
         .card.bus {
             background-image: url('carte_voiture.png');
-            animation-delay: 0.6s;
         }
 
         @keyframes fadeIn {
@@ -162,14 +156,11 @@
             cards.forEach(card => {
                 if (card.dataset.transport === layer) {
                     card.classList.add('active');
-                    card.style.opacity = '0.85';
                 } else {
                     card.classList.remove('active');
-                    card.style.opacity = '0';
                 }
             });
 
-            // Mettre à jour l'état actif des boutons
             buttons.forEach(button => {
                 if (button.dataset.layer === layer) {
                     button.classList.add('active');
@@ -179,14 +170,21 @@
             });
         }
 
-        // Activer les interactions après l'animation
+        // Animation initiale
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.animation = 'fadeIn 0.5s ease forwards';
+            }, index * 200);
+        });
+
+        // Après l'animation, initialiser avec le calque piéton actif
         setTimeout(() => {
             cards.forEach(card => {
-                card.style.pointerEvents = 'auto';
+                card.style.animation = ''; // Retirer l'animation
+                card.style.opacity = '0'; // Réinitialiser toutes les cartes
             });
-            // Initialiser avec le calque piéton actif
-            showLayer('pieton');
-        }, 1000); // Délai après la fin de l'animation (0.6s + 0.4s pour sécurité)
+            showLayer('pieton'); // Afficher le calque piéton par défaut
+        }, 1000); // Attendre la fin de l'animation
     </script>
 </body>
 </html>
