@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annexe Portfolio - Vue en Coupe des Cartes Isochrones</title>
+    <title>Annexe Portfolio - Superposition des Cartes Isochrones</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,62 +28,76 @@
             margin-bottom: 20px;
         }
 
-        .cards-stack {
-            position: relative;
-            height: 300px;
-            perspective: 800px;
+        .buttons {
             margin-bottom: 20px;
         }
 
-        .card {
-            position: absolute;
-            width: 300px;
-            height: 200px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, opacity 0.3s ease, z-index 0.3s ease;
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
             cursor: pointer;
-            opacity: 0.85;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
         }
 
-        .card:hover {
-            transform: translateY(-10px) translateX(-10px) scale(1.05);
-            opacity: 1;
-            z-index: 10;
+        .button:hover {
+            background-color: #0056b3;
         }
 
-        .card:nth-child(1) {
-            background-image: url('carte_pieton.png');
-            transform: translateY(0) translateX(0) translateZ(30px);
-            z-index: 3;
+        .button.active {
+            background-color: #003d82;
         }
 
-        .card:nth-child(2) {
-            background-image: url('carte_velo.png');
-            transform: translateY(30px) translateX(30px) translateZ(15px);
-            z-index: 2;
-        }
-
-        .card:nth-child(3) {
-            background-image: url('carte_voiture.png');
-            transform: translateY(60px) translateX(60px) translateZ(0);
-            z-index: 1;
+        .map-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            margin: 0 auto;
         }
 
         .main-map {
             width: 100%;
-            max-width: 600px;
-            height: 400px;
+            height: 100%;
             background-image: url('carte_principale.png');
             background-size: cover;
             background-position: center;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin: 0 auto;
-            position: relative;
+            position: absolute;
             z-index: 0;
+        }
+
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .overlay.active {
+            opacity: 0.6;
+        }
+
+        #overlay-pieton {
+            background-image: url('carte_pieton.png');
+        }
+
+        #overlay-velo {
+            background-image: url('carte_velo.png');
+        }
+
+        #overlay-bus {
+            background-image: url('carte_voiture.png');
         }
 
         .description {
@@ -93,25 +107,13 @@
         }
 
         @media (max-width: 600px) {
-            .card {
-                width: 200px;
-                height: 133px;
-            }
-
-            .card:nth-child(1) {
-                transform: translateY(0) translateX(0) translateZ(20px);
-            }
-
-            .card:nth-child(2) {
-                transform: translateY(20px) translateX(20px) translateZ(10px);
-            }
-
-            .card:nth-child(3) {
-                transform: translateY(40px) translateX(40px) translateZ(0);
-            }
-
-            .main-map {
+            .map-container {
                 height: 300px;
+            }
+
+            .button {
+                padding: 8px 15px;
+                font-size: 0.9rem;
             }
 
             h1 {
@@ -122,28 +124,35 @@
 </head>
 <body>
     <div class="container">
-        <h1>Vue en Coupe de l'Accessibilité de l'École</h1>
-        <div class="cards-stack">
-            <div class="card" data-transport="Pieton"></div>
-            <div class="card" data-transport="Velo"></div>
-            <div class="card" data-transport="Voiture"></div>
+        <h1>Accessibilité de l'École par Moyen de Transport</h1>
+        <div class="buttons">
+            <button class="button" data-overlay="pieton">Piétons</button>
+            <button class="button" data-overlay="velo">Vélo</button>
+            <button class="button" data-overlay="bus">Bus</button>
         </div>
-        <div class="main-map"></div>
-        <p class="description">Vue en coupe des cartes isochrones montrant l'accessibilité de l'école à pied, à vélo et en voiture. Survolez les cartes pour les mettre en évidence.</p>
+        <div class="map-container">
+            <div class="main-map"></div>
+            <div class="overlay" id="overlay-pieton"></div>
+            <div class="overlay" id="overlay-velo"></div>
+            <div class="overlay" id="overlay-bus"></div>
+        </div>
+        <p class="description">Cliquez sur les boutons pour afficher les cartes isochrones en superposition sur la carte principale.</p>
     </div>
 
     <script>
-        const cards = document.querySelectorAll('.card');
+        const buttons = document.querySelectorAll('.button');
+        const overlays = document.querySelectorAll('.overlay');
 
-        cards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.zIndex = 10;
-                card.style.opacity = 1;
-            });
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Désactiver tous les calques et boutons
+                overlays.forEach(overlay => overlay.classList.remove('active'));
+                buttons.forEach(btn => btn.classList.remove('active'));
 
-            card.addEventListener('mouseleave', () => {
-                card.style.zIndex = card.dataset.transport === 'Pieton' ? 3 : card.dataset.transport === 'Velo' ? 2 : 1;
-                card.style.opacity = 0.85;
+                // Activer le calque et le bouton correspondant
+                const overlayId = `overlay-${button.dataset.overlay}`;
+                document.getElementById(overlayId).classList.add('active');
+                button.classList.add('active');
             });
         });
     </script>
