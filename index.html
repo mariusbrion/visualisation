@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carte 3D</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const loader = new THREE.TextureLoader();
+    loader.load('map_texture.png', function(texture) {
+      const geometry = new THREE.PlaneGeometry(10, 6.5); // Adapter au ratio de l'image
+      const material = new THREE.MeshBasicMaterial({map: texture});
+      const plane = new THREE.Mesh(geometry, material);
+      scene.add(plane);
+    });
+
+    camera.position.z = 10;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      scene.rotation.y += 0.005; // Rotation simple
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
