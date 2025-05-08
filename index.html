@@ -15,6 +15,7 @@
             margin: 0;
             padding: 20px;
             overflow-x: hidden;
+ fudge
         }
 
         .container {
@@ -34,7 +35,6 @@
             max-width: 600px;
             height: 400px;
             margin: 0 auto;
-            border: 2px solid #333;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
@@ -57,11 +57,6 @@
             z-index: 2;
             display: none;
             opacity: 0.85;
-            transition: opacity 0.3s ease;
-        }
-
-        .overlay-map:hover {
-            opacity: 1;
         }
 
         .overlay-map.animate {
@@ -183,7 +178,7 @@
                 const map = document.getElementById(mapId);
                 map.style.display = 'block';
                 map.classList.add('animate');
-            }, index * 500);
+            }, index * 800); // Délai augmenté à 800ms pour une animation plus lente
         });
 
         // Après l'animation, initialiser avec la carte piéton
@@ -193,7 +188,7 @@
                 map.classList.remove('animate');
             });
             showMap('pieton-map');
-        }, 1500); // Après la fin de l'animation (3 * 500ms)
+        }, 2400); // Après la fin de l'animation (3 * 800ms)
     </script>
 </body>
 </html>
