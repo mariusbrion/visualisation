@@ -15,7 +15,6 @@
             margin: 0;
             padding: 20px;
             overflow-x: hidden;
- fudge
         }
 
         .container {
@@ -56,7 +55,7 @@
         .overlay-map {
             z-index: 2;
             display: none;
-            opacity: 0.85;
+            opacity: 1;
         }
 
         .overlay-map.animate {
@@ -69,7 +68,7 @@
                 transform: translateY(20px);
             }
             to {
-                opacity: 0.85;
+                opacity: 1;
                 transform: translateY(0);
             }
         }
@@ -132,16 +131,16 @@
             <img id="bus-map" class="overlay-map" src="carte_voiture.png" alt="Carte isochrone bus">
         </div>
         <div class="buttons">
-            <button class="button active" id="pieton-btn" onclick="showMap('pieton-map')">Piéton</button>
+            <button class="button" id="pieton-btn" onclick="showMap('pieton-map')">Piéton</button>
             <button class="button" id="velo-btn" onclick="showMap('velo-map')">Vélo</button>
-            <button class="button" id="bus-btn" onclick="showMap('bus-map')">Bus</button>
+            <button class="button active" id="bus-btn" onclick="showMap('bus-map')">Bus</button>
         </div>
         <p class="description">Vue en coupe des cartes isochrones montrant l'accessibilité de l'école à pied, à vélo et en bus. Utilisez les boutons pour afficher chaque calque.</p>
     </div>
 
     <script>
-        let activeMap = 'pieton-map';
-        let activeButton = document.getElementById('pieton-btn');
+        let activeMap = 'bus-map';
+        let activeButton = document.getElementById('bus-btn');
 
         // Fonction pour afficher une carte spécifique
         function showMap(mapId) {
@@ -178,16 +177,16 @@
                 const map = document.getElementById(mapId);
                 map.style.display = 'block';
                 map.classList.add('animate');
-            }, index * 800); // Délai augmenté à 800ms pour une animation plus lente
+            }, index * 800); // Délai de 800ms pour une animation lente
         });
 
-        // Après l'animation, initialiser avec la carte piéton
+        // Après l'animation, initialiser avec la carte bus
         setTimeout(() => {
             document.querySelectorAll('.overlay-map').forEach(map => {
                 map.style.display = 'none';
                 map.classList.remove('animate');
             });
-            showMap('pieton-map');
+            showMap('bus-map');
         }, 2400); // Après la fin de l'animation (3 * 800ms)
     </script>
 </body>
