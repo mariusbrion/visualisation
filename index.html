@@ -3,188 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annexe Portfolio - Vue en Coupe des Cartes Isochrones</title>
+    <title>Annexe Portfolio - Accessibilité École</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            background-color: #f4f4f4;
             margin: 0;
-            overflow-x: hidden;
-        }
-
-        .container {
-            text-align: center;
-            max-width: 800px;
             padding: 20px;
         }
-
         h1 {
-            font-size: 2rem;
             color: #333;
             margin-bottom: 20px;
         }
-
         .map-container {
             position: relative;
-            width: 100%;
-            max-width: 600px;
-            height: 400px;
-            margin: 0 auto;
+            width: 800px;
+            height: 600px;
+            border: 2px solid #333;
+            background-color: #fff;
         }
-
-        .main-map {
+        .map-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('carte_principale.png');
-            background-size: cover;
-            background-position: center;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            position: absolute;
-            z-index: 0;
+            object-fit: cover;
         }
-
-        .card {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            border-radius: 10px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        #main-map {
+            z-index: 1;
         }
-
-        .card.active {
-            opacity: 0.85;
+        .overlay-map {
+            z-index: 2;
+            display: none;
+            opacity: 0.7;
         }
-
-        .card:hover {
-            opacity: 1;
-        }
-
-        .card.pieton {
-            background-image: url('carte_pieton.png');
-        }
-
-        .card.velo {
-            background-image: url('carte_velo.png');
-        }
-
-        .card.bus {
-            background-image: url('carte_voiture.png');
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 0.85;
-                transform: translateY(0);
-            }
-        }
-
         .buttons {
             margin-top: 20px;
+            display: flex;
+            gap: 10px;
         }
-
-        .button {
-            background-color: #007bff;
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
             color: white;
             border: none;
-            padding: 10px 20px;
-            margin: 5px;
             border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
-
-        .button:hover {
+        button:hover {
             background-color: #0056b3;
         }
-
-        .button.active {
-            background-color: #003087;
-        }
-
-        .description {
-            margin-top: 20px;
-            font-size: 1rem;
-            color: #555;
-        }
-
-        @media (max-width: 600px) {
-            .map-container {
-                height: 300px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
+        button.active {
+            background-color: #28a745;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Vue en Coupe de l'Accessibilité de l'École</h1>
-        <div class="map-container">
-            <div class="main-map"></div>
-            <div class="card pieton" data-transport="pieton"></div>
-            <div class="card velo" data-transport="velo"></div>
-            <div class="card bus" data-transport="bus"></div>
-        </div>
-        <div class="buttons">
-            <button class="button active" data-layer="pieton" onclick="showLayer('pieton')">Piéton</button>
-            <button class="button" data-layer="velo" onclick="showLayer('velo')">Vélo</button>
-            <button class="button" data-layer="bus" onclick="showLayer('bus')">Bus</button>
-        </div>
-        <p class="description">Vue en coupe des cartes isochrones montrant l'accessibilité de l'école à pied, à vélo et en bus. Utilisez les boutons pour afficher chaque calque.</p>
+    <h1>Accessibilité à l'École</h1>
+    <div class="map-container">
+        <img id="main-map" src="carte_principale.png" alt="Carte principale de l'école">
+        <img id="pedestrian-map" class="overlay-map" src="carte_pieton.png" alt="Carte isochrone marche">
+        <img id="bike-map" class="overlay-map" src="carte_velo.png" alt="Carte isochrone vélo">
+        <img id="bus-map" class="overlay-map" src="carte_voiture.png" alt="Carte isochrone bus">
+    </div>
+    <div class="buttons">
+        <button onclick="showMap('pedestrian-map')" id="pedestrian-btn">Marche</button>
+        <button onclick="showMap('bike-map')" id="bike-btn">Vélo</button>
+        <button onclick="showMap('bus-map')" id="bus-btn">Bus</button>
     </div>
 
     <script>
-        const cards = document.querySelectorAll('.card');
-        const buttons = document.querySelectorAll('.button');
+        let activeMap = null;
+        let activeButton = null;
 
-        // Fonction pour afficher un calque spécifique
-        function showLayer(layer) {
-            cards.forEach(card => {
-                if (card.dataset.transport === layer) {
-                    card.classList.add('active');
-                } else {
-                    card.classList.remove('active');
-                }
+        function showMap(mapId) {
+            // Hide all overlay maps
+            document.querySelectorAll('.overlay-map').forEach(map => {
+                map.style.display = 'none';
             });
 
-            buttons.forEach(button => {
-                if (button.dataset.layer === layer) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
-                }
+            // Remove active class from all buttons
+            document.querySelectorAll('.buttons button').forEach(btn => {
+                btn.classList.remove('active');
             });
+
+            if (activeMap === mapId) {
+                // If clicking the same map, hide it (toggle off)
+                activeMap = null;
+            } else {
+                // Show the selected map
+                const map = document.getElementById(mapId);
+                map.style.display = 'block';
+                activeMap = mapId;
+
+                // Highlight the active button
+                const btn = document.getElementById(mapId.replace('map', 'btn'));
+                btn.classList.add('active');
+                activeButton = btn;
+            }
         }
-
-        // Animation initiale
-        cards.forEach((card, index) => {
-            setTimeout(() => {
-                card.style.animation = 'fadeIn 0.5s ease forwards';
-            }, index * 200);
-        });
-
-        // Après l'animation, initialiser avec le calque piéton actif
-        setTimeout(() => {
-            cards.forEach(card => {
-                card.style.animation = ''; // Retirer l'animation
-                card.style.opacity = '0'; // Réinitialiser toutes les cartes
-            });
-            showLayer('pieton'); // Afficher le calque piéton par défaut
-        }, 1000); // Attendre la fin de l'animation
     </script>
 </body>
 </html>
