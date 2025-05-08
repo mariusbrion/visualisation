@@ -101,6 +101,7 @@
         .card.hidden {
             opacity: 0;
             pointer-events: none;
+            display: none; /* Ajouté pour éviter toute superposition */
         }
 
         .main-map {
@@ -192,11 +193,15 @@
             });
 
             setTimeout(() => {
+                // Masquer tous les calques après l'animation
                 cards.forEach(card => {
-                    if (card.dataset.transport !== 'Pieton') { // Par défaut, garder Piéton visible
-                        card.classList.add('hidden');
-                    }
+                    card.classList.add('hidden');
+                    card.classList.remove('animate'); // Supprime l'animation pour éviter des conflits
                 });
+
+                // Afficher le calque par défaut (Piéton) sur la carte principale
+                const mainMap = document.getElementById('main-map');
+                mainMap.style.backgroundImage = `url('carte_pieton.png')`;
             }, 2500); // Fin de l'animation après 2,5 secondes
         });
 
@@ -209,7 +214,7 @@
                 const layer = button.dataset.layer;
                 const imageUrl = layer === 'Pieton' ? 'carte_pieton.png' :
                                 layer === 'Velo' ? 'carte_velo.png' : 'carte_bus.png';
-                
+
                 // Mettre à jour l'image de la carte principale
                 mainMap.style.backgroundImage = `url('${imageUrl}')`;
 
@@ -217,13 +222,9 @@
                 buttons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
 
-                // Afficher uniquement le calque sélectionné
+                // Masquer tous les calques animés
                 cards.forEach(card => {
-                    if (card.dataset.transport === layer) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
+                    card.classList.add('hidden');
                 });
             });
         });
