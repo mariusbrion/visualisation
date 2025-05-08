@@ -58,6 +58,7 @@
             opacity: 0; /* Commence invisible */
             animation: fadeIn 0.5s ease forwards; /* Animation d'apparition */
             pointer-events: none; /* Désactive les interactions pendant l'animation */
+            transition: opacity 0.3s ease;
         }
 
         .card.active {
@@ -114,6 +115,10 @@
             background-color: #0056b3;
         }
 
+        .button.active {
+            background-color: #003087;
+        }
+
         .description {
             margin-top: 20px;
             font-size: 1rem;
@@ -136,14 +141,14 @@
         <h1>Vue en Coupe de l'Accessibilité de l'École</h1>
         <div class="map-container">
             <div class="main-map"></div>
-            <div class="card pieton" data-transport="Pieton"></div>
-            <div class="card velo" data-transport="Velo"></div>
-            <div class="card bus" data-transport="Bus"></div>
+            <div class="card pieton" data-transport="pieton"></div>
+            <div class="card velo" data-transport="velo"></div>
+            <div class="card bus" data-transport="bus"></div>
         </div>
         <div class="buttons">
-            <button class="button" onclick="showLayer('pieton')">Piéton</button>
-            <button class="button" onclick="showLayer('velo')">Vélo</button>
-            <button class="button" onclick="showLayer('bus')">Bus</button>
+            <button class="button active" data-layer="pieton" onclick="showLayer('pieton')">Piéton</button>
+            <button class="button" data-layer="velo" onclick="showLayer('velo')">Vélo</button>
+            <button class="button" data-layer="bus" onclick="showLayer('bus')">Bus</button>
         </div>
         <p class="description">Vue en coupe des cartes isochrones montrant l'accessibilité de l'école à pied, à vélo et en bus. Utilisez les boutons pour afficher chaque calque.</p>
     </div>
@@ -155,10 +160,21 @@
         // Fonction pour afficher un calque spécifique
         function showLayer(layer) {
             cards.forEach(card => {
-                if (card.classList.contains(layer)) {
+                if (card.dataset.transport === layer) {
                     card.classList.add('active');
+                    card.style.opacity = '0.85';
                 } else {
                     card.classList.remove('active');
+                    card.style.opacity = '0';
+                }
+            });
+
+            // Mettre à jour l'état actif des boutons
+            buttons.forEach(button => {
+                if (button.dataset.layer === layer) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
                 }
             });
         }
@@ -168,10 +184,9 @@
             cards.forEach(card => {
                 card.style.pointerEvents = 'auto';
             });
+            // Initialiser avec le calque piéton actif
+            showLayer('pieton');
         }, 1000); // Délai après la fin de l'animation (0.6s + 0.4s pour sécurité)
-
-        // Initialiser avec le calque piéton actif
-        showLayer('pieton');
     </script>
 </body>
 </html>
