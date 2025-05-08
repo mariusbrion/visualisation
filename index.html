@@ -19,7 +19,7 @@
 
         .container {
             text-align: center;
-            max-width: 800px;
+            max-width: 1000px; /* Ajusté pour accueillir la carte plus grande */
         }
 
         h1 {
@@ -31,8 +31,8 @@
         .map-container {
             position: relative;
             width: 100%;
-            max-width: 600px;
-            height: 400px;
+            max-width: 900px; /* Augmenté de 600px à 900px */
+            height: 600px; /* Augmenté de 400px à 600px */
             margin: 0 auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -105,9 +105,10 @@
             color: #555;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 900px) {
             .map-container {
-                height: 300px;
+                max-width: 100%;
+                height: 450px; /* Ajusté pour petits écrans */
             }
 
             h1 {
