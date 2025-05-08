@@ -64,19 +64,19 @@
             animation: slideIn 1s ease-out forwards;
         }
 
-        .card:nth-child(1) {
+        .card.pieton {
             background-image: url('carte_pieton.png');
             animation-delay: 0s;
             z-index: 3;
         }
 
-        .card:nth-child(2) {
+        .card.velo {
             background-image: url('carte_velo.png');
             animation-delay: 0.5s;
             z-index: 2;
         }
 
-        .card:nth-child(3) {
+        .card.bus {
             background-image: url('carte_bus.png');
             animation-delay: 1s;
             z-index: 1;
@@ -170,9 +170,9 @@
         <h1>Accessibilité de l'École par Moyen de Transport</h1>
         <div class="main-map-container">
             <div class="cards-stack">
-                <div class="card" data-transport="Pieton"></div>
-                <div class="card" data-transport="Velo"></div>
-                <div class="card" data-transport="Bus"></div>
+                <div class="card pieton" data-transport="Pieton"></div>
+                <div class="card velo" data-transport="Velo"></div>
+                <div class="card bus" data-transport="Bus"></div>
             </div>
             <div class="main-map" id="main-map"></div>
         </div>
@@ -193,27 +193,41 @@
 
             setTimeout(() => {
                 cards.forEach(card => {
-                    card.classList.add('hidden');
+                    if (card.dataset.transport !== 'Pieton') { // Par défaut, garder Piéton visible
+                        card.classList.add('hidden');
+                    }
                 });
-            }, 2500);
+            }, 2500); // Fin de l'animation après 2,5 secondes
         });
 
         const buttons = document.querySelectorAll('.button');
         const mainMap = document.getElementById('main-map');
+        const cards = document.querySelectorAll('.card');
 
         buttons.forEach(button => {
             button.addEventListener('click', () => {
                 const layer = button.dataset.layer;
                 const imageUrl = layer === 'Pieton' ? 'carte_pieton.png' :
                                 layer === 'Velo' ? 'carte_velo.png' : 'carte_bus.png';
+                
+                // Mettre à jour l'image de la carte principale
                 mainMap.style.backgroundImage = `url('${imageUrl}')`;
 
+                // Mettre à jour l'état des boutons
                 buttons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
+
+                // Afficher uniquement le calque sélectionné
+                cards.forEach(card => {
+                    if (card.dataset.transport === layer) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
             });
         });
 
-        const cards = document.querySelectorAll('.card');
         cards.forEach(card => {
             card.addEventListener('mouseenter', () => {
                 card.style.zIndex = 10;
@@ -221,7 +235,8 @@
             });
 
             card.addEventListener('mouseleave', () => {
-                card.style.zIndex = card.dataset.transport === 'Pieton' ? 3 : card.dataset.transport === 'Velo' ? 2 : 1;
+                card.style.zIndex = card.dataset.transport === 'Pieton' ? 3 : 
+                                    card.dataset.transport === 'Velo' ? 2 : 1;
                 card.style.opacity = 0.85;
             });
         });
