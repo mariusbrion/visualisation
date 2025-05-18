@@ -117,17 +117,23 @@
         }
 
         .cao-video {
-            width: 100%;
-            max-width: 900px;
-            height: 600px;
+            max-width: 100%;
+            width: auto;
+            height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         @media (max-width: 900px) {
-            .map-container, .cao-video {
+            .map-container {
                 max-width: 100%;
                 height: 450px;
+            }
+
+            .cao-video {
+                max-width: 100%;
+                width: auto;
+                height: auto;
             }
 
             h1 {
