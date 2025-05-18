@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annexe Portfolio - Vue en Coupe des Cartes Isochrones et CAO</title>
+    <title>Annexe Portfolio - Accessibilité scolaire et CAO</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -109,6 +109,7 @@
             margin-top: 20px;
             font-size: 1rem;
             color: #555;
+            line-height: 1.5;
         }
 
         .cao-section {
@@ -153,7 +154,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Vue en Coupe de l'Accessibilité de l'École</h1>
+        <h1>Accessibilité scolaire sur la commune du Haillan : vue isochrone</h1>
         <div class="map-container">
             <img id="main-map" src="carte_principale.png" alt="Carte principale de l'école">
             <img id="pieton-map" class="overlay-map" src="carte_pieton.png" alt="Carte isochrone piéton">
@@ -165,15 +166,15 @@
             <button class="button" id="velo-btn" onclick="showMap('velo-map')">Vélo</button>
             <button class="button active" id="bus-btn" onclick="showMap('bus-map')">Bus</button>
         </div>
-        <p class="description">Vue en coupe des cartes isochrones montrant l'accessibilité de l'école à pied, à vélo et en bus. Utilisez les boutons pour afficher chaque calque.</p>
+        <p class="description">Cette cartographie interactive montre les temps d’accès aux écoles élémentaire et maternelle du centre du Haillan selon trois modes de transport : à pied, à vélo et en bus. Réalisée à l’aide des données d’OpenStreetMap et d’un algorithme de calcul d’isochrones sous QGIS, elle permet de visualiser finement la répartition temporelle des déplacements vers l’école.<br><br>Les zones colorées indiquent les distances-temps : la zone violette correspond à un accès en moins de 10 minutes. Chaque point est associé à un chiffre représentant le temps estimé, en minutes, nécessaire pour rejoindre l’école depuis ce point.<br><br>Les boutons interactifs permettent d’alterner entre les modes de déplacement afin de comparer leur efficacité respective. Ce travail propose une lecture synthétique de l’accessibilité scolaire sur le territoire, et peut servir d’appui à la planification des mobilités durables à l’échelle locale.</p>
 
         <div class="cao-section">
-            <h2>Projet CAO : Piste Cyclable à Bordeaux</h2>
+            <h2>Projet CAO : liaison cyclable entre les Bassins à Flots et les quais – Bordeaux</h2>
             <video class="cao-video" autoplay loop muted>
                 <source src="CAO.mp4" type="video/mp4">
                 Votre navigateur ne supporte pas la lecture de vidéos.
             </video>
-            <p class="description">Projet fictif de conception d'une piste cyclable reliant la zone piétonne des Bassins à Flots à la piste cyclable des quais à Bordeaux, créant une continuité cyclable. Réalisé avec des outils de CAO pour démontrer des compétences en conception assistée par ordinateur.</p>
+            <p class="description">Ce projet fictif propose la conception d’une piste cyclable visant à renforcer la continuité des mobilités douces sur le territoire bordelais. L’aménagement relie la zone piétonne des Bassins à Flots à la piste cyclable déjà existante le long des quais, aujourd’hui séparées par un axe routier à fort trafic.<br><br>Réalisé sous SketchUp, ce travail met en œuvre des compétences en conception assistée par ordinateur (CAO) pour imaginer un aménagement cyclable sécurisé et intégré dans le tissu urbain dense.<br><br>Ce cas d’étude illustre la manière dont des outils de CAO peuvent accompagner la réflexion sur les continuités cyclables en milieu urbain, et servir de support à la préfiguration d’un aménagement cohérent, adapté aux enjeux de mobilité durable.</p>
         </div>
     </div>
 
