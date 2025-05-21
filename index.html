@@ -3,267 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expérience 3D Interactive</title>
+    <title>Annexe Portfolio - Accessibilité scolaire et CAO</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
-            overflow: hidden;
-            background: #f5f5e6; /* Fond beige clair */
+            padding: 20px;
+            overflow-x: hidden;
         }
-        canvas {
-            display: block;
-            width: 100vw;
-            height: 100vh;
+
+        .container {
+            text-align: center;
+            max-width: 1000px;
         }
-        #controls {
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 40px 0 20px;
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 600px;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .map-container img {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
         }
-        button {
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            background: #333;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
+
+        #main-map {
+            z-index: 1;
         }
-        button:hover {
-            background: #555;
+
+        .overlay-map {
+            z-index: 2;
+            display: none;
+            opacity: 1;
         }
-        .label {
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            pointer-events: none;
+
+        .overlay-map.animate {
+            animation: fadeIn 0.5s ease forwards;
         }
-        @media (max-width: 768px) {
-            button {
-                padding: 8px 15px;
-                font-size: 14px;
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-            .label {
-                font-size: 12px;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .button.active {
+            background-color: #28a745;
+        }
+
+        .description {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .cao-section {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .cao-video {
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 900px) {
+            .map-container {
+                max-width: 100%;
+                height: 450px;
+            }
+
+            .cao-video {
+                max-width: 100%;
+                width: auto;
+                height: auto;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .button {
+                padding: 8px 16px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
-    <div id="controls">
-        <button id="fullscreenBtn">Plein écran</button>
-        <button id="resetBtn">Réinitialiser la vue</button>
+    <div class="container">
+        <h1>Accessibilité scolaire sur la commune du Haillan : vue isochrone</h1>
+        <div class="map-container">
+            <img id="main-map" src="carte_principale.png" alt="Carte principale de l'école">
+            <img id="pieton-map" class="overlay-map" src="carte_pieton.png" alt="Carte isochrone piéton">
+            <img id="velo-map" class="overlay-map" src="carte_velo.png" alt="Carte isochrone vélo">
+            <img id="bus-map" class="overlay-map" src="carte_voiture.png" alt="Carte isochrone bus">
+        </div>
+        <div class="buttons">
+            <button class="button" id="pieton-btn" onclick="showMap('pieton-map')">Piéton</button>
+            <button class="button" id="velo-btn" onclick="showMap('velo-map')">Vélo</button>
+            <button class="button active" id="bus-btn" onclick="showMap('bus-map')">Bus</button>
+        </div>
+        <p class="description">Cette cartographie interactive montre les temps d’accès aux écoles élémentaire et maternelle du centre du Haillan selon trois modes de transport : à pied, à vélo et en bus. Réalisée à l’aide des données d’OpenStreetMap et d’un algorithme de calcul d’isochrones sous QGIS, elle permet de visualiser finement la répartition temporelle des déplacements vers l’école.<br><br>Les zones colorées indiquent les distances-temps : la zone violette correspond à un accès en moins de 10 minutes. Chaque point est associé à un chiffre représentant le temps estimé, en minutes, nécessaire pour rejoindre l’école depuis ce point.<br><br>Les boutons interactifs permettent d’alterner entre les modes de déplacement afin de comparer leur efficacité respective. Ce travail propose une lecture synthétique de l’accessibilité scolaire sur le territoire, et peut servir d’appui à la planification des mobilités durables à l’échelle locale.</p>
+
+        <div class="cao-section">
+            <h2>Projet CAO : liaison cyclable entre les Bassins à Flots et les quais – Bordeaux</h2>
+            <video class="cao-video" autoplay loop muted>
+                <source src="CAO.mp4" type="video/mp4">
+                Votre navigateur ne supporte pas la lecture de vidéos.
+            </video>
+            <p class="description">Ce projet fictif propose la conception d’une piste cyclable visant à renforcer la continuité des mobilités douces sur le territoire bordelais. L’aménagement relie la zone piétonne des Bassins à Flots à la piste cyclable déjà existante le long des quais, aujourd’hui séparées par un axe routier à fort trafic.<br><br>Réalisé sous SketchUp, ce travail met en œuvre des compétences en conception assistée par ordinateur (CAO) pour imaginer un aménagement cyclable sécurisé et intégré dans le tissu urbain dense.<br><br>Ce cas d’étude illustre la manière dont des outils de CAO peuvent accompagner la réflexion sur les continuités cyclables en milieu urbain, et servir de support à la préfiguration d’un aménagement cohérent, adapté aux enjeux de mobilité durable.</p>
+        </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+
     <script>
-        // Initialisation de la scène
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xf5f5e6); // Fond beige clair
+        let activeMap = 'bus-map';
+        let activeButton = document.getElementById('bus-btn');
 
-        // Caméra
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 5, 15);
+        // Fonction pour afficher une carte spécifique
+        function showMap(mapId) {
+            // Masquer toutes les cartes overlay
+            document.querySelectorAll('.overlay-map').forEach(map => {
+                map.style.display = 'none';
+                map.classList.remove('animate');
+            });
 
-        // Rendu WebGL
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+            // Retirer la classe active de tous les boutons
+            document.querySelectorAll('.button').forEach(btn => {
+                btn.classList.remove('active');
+            });
 
-        // Rendu CSS2D pour les labels
-        const labelRenderer = new THREE.CSS2DRenderer();
-        labelRenderer.setSize(window.innerWidth, window.innerHeight);
-        labelRenderer.domElement.style.position = 'absolute';
-        labelRenderer.domElement.style.top = '0px';
-        document.body.appendChild(labelRenderer.domElement);
+            // Afficher la carte sélectionnée
+            const map = document.getElementById(mapId);
+            map.style.display = 'block';
+            activeMap = mapId;
 
-        // Contrôles OrbitControls
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.minDistance = 5;
-        controls.maxDistance = 50;
+            // Mettre en surbrillance le bouton actif
+            const btn = document.getElementById(mapId.replace('map', 'btn'));
+            btn.classList.add('active');
+            activeButton = btn;
+        }
 
-        // Éclairage
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
-        directionalLight.position.set(10, 20, 10);
-        scene.add(directionalLight);
-
-        // Images (URLs pour l'exemple, deuxième image modifiée)
-        const imageUrls = [
-            'https://picsum.photos/400/300?random=1',
-            'carte_châtellerault.jpg', // Image locale
-            'https://picsum.photos/400/300?random=3',
-            'https://picsum.photos/400/300?random=4',
-            'https://picsum.photos/400/300?random=5'
-        ];
-
-        // Création des plans pour les images
-        const planes = [];
-        const loader = new THREE.TextureLoader();
-        let selectedPlane = null;
-
-        imageUrls.forEach((url, index) => {
-            loader.load(url, (texture) => {
-                const geometry = new THREE.PlaneGeometry(4, 3);
-                const material = new THREE.MeshBasicMaterial({
-                    map: texture,
-                    transparent: true,
-                    opacity: 0, // Début à 0 pour fade-in
-                    side: THREE.DoubleSide
+        // Animation initiale au chargement
+        const maps = ['pieton-map', 'velo-map', 'bus-map'];
+        maps.forEach((mapId, index) => {
+            setTimeout(() => {
+                document.querySelectorAll('.overlay-map').forEach(map => {
+                    map.style.display = 'none';
+                    map.classList.remove('animate');
                 });
-                const plane = new THREE.Mesh(geometry, material);
-                
-                // Position en spirale
-                const angle = (index / imageUrls.length) * Math.PI * 2;
-                const radius = 8;
-                plane.position.set(
-                    Math.cos(angle) * radius,
-                    index * 2 - (imageUrls.length - 1),
-                    Math.sin(angle) * radius
-                );
-                
-                // Inclinaison aléatoire
-                plane.rotation.x = (Math.random() - 0.5) * 0.3;
-                plane.rotation.y = (Math.random() - 0.5) * 0.3;
-                
-                // Ajout d'un label
-                const labelDiv = document.createElement('div');
-                labelDiv.className = 'label';
-                labelDiv.textContent = 'Description de l\'image';
-                labelDiv.style.display = 'none'; // Caché par défaut
-                const label = new THREE.CSS2DObject(labelDiv);
-                label.position.set(0, -2, 0); // Sous l'image
-                plane.add(label);
+                const map = document.getElementById(mapId);
+                map.style.display = 'block';
+                map.classList.add('animate');
+            }, index * 800); // Délai de 800ms pour une animation lente
+        });
 
-                scene.add(plane);
-                planes.push({ mesh: plane, angle: angle, isSelected: false, label: label });
-
-                // Animation fade-in
-                let opacity = 0;
-                const fadeIn = () => {
-                    opacity += 0.02;
-                    material.opacity = opacity;
-                    if (opacity < 0.8) {
-                        requestAnimationFrame(fadeIn);
-                    }
-                };
-                fadeIn();
-            }, undefined, (error) => {
-                console.error('Erreur de chargement de l\'image :', url, error);
+        // Après l'animation, initialiser avec la carte bus
+        setTimeout(() => {
+            document.querySelectorAll('.overlay-map').forEach(map => {
+                map.style.display = 'none';
+                map.classList.remove('animate');
             });
-        });
-
-        // Animation de rotation des plans
-        function animatePlanes() {
-            planes.forEach(plane => {
-                if (!plane.isSelected) {
-                    plane.angle += 0.01;
-                    const radius = 8;
-                    plane.mesh.position.x = Math.cos(plane.angle) * radius;
-                    plane.mesh.position.z = Math.sin(plane.angle) * radius;
-                }
-            });
-        }
-
-        // Gestion des clics pour agrandir les images
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-        let targetPosition = null;
-        let targetLookAt = null;
-
-        function onClick(event) {
-            // Calculer les coordonnées de la souris normalisées
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            // Mettre à jour le raycaster
-            raycaster.setFromCamera(mouse, camera);
-
-            // Vérifier les intersections avec les plans
-            const intersects = raycaster.intersectObjects(planes.map(p => p.mesh));
-            if (intersects.length > 0) {
-                const plane = intersects[0].object;
-                // Désélectionner l'image précédente
-                if (selectedPlane) {
-                    selectedPlane.isSelected = false;
-                    selectedPlane.label.element.style.display = 'none';
-                }
-                // Trouver le plan correspondant dans le tableau
-                const clickedPlane = planes.find(p => p.mesh === plane);
-                clickedPlane.isSelected = true;
-                clickedPlane.label.element.style.display = 'block'; // Afficher le label
-                selectedPlane = clickedPlane;
-                // Calculer la position cible pour la caméra
-                targetPosition = plane.position.clone().add(new THREE.Vector3(0, 0, 5));
-                targetLookAt = plane.position.clone();
-            }
-        }
-
-        // Animation fluide de la caméra
-        function animateCamera() {
-            if (targetPosition && targetLookAt) {
-                camera.position.lerp(targetPosition, 0.1);
-                controls.target.lerp(targetLookAt, 0.1);
-                controls.update();
-                if (camera.position.distanceTo(targetPosition) < 0.1) {
-                    targetPosition = null;
-                    targetLookAt = null;
-                }
-            }
-        }
-
-        window.addEventListener('click', onClick);
-
-        // Boutons de contrôle
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        fullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                renderer.domElement.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
-        });
-
-        const resetBtn = document.getElementById('resetBtn');
-        resetBtn.addEventListener('click', () => {
-            camera.position.set(0, 5, 15);
-            controls.target.set(0, 0, 0);
-            controls.update();
-            targetPosition = null;
-            targetLookAt = null;
-            if (selectedPlane) {
-                selectedPlane.isSelected = false;
-                selectedPlane.label.element.style.display = 'none';
-                selectedPlane = null;
-            }
-        });
-
-        // Gestion du redimensionnement
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            labelRenderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // Boucle d'animation
-        function animate() {
-            requestAnimationFrame(animate);
-            animatePlanes();
-            animateCamera();
-            controls.update();
-            renderer.render(scene, camera);
-            labelRenderer.render(scene, camera);
-        }
-        animate();
+            showMap('bus-map');
+        }, 2400); // Après la fin de l'animation (3 * 800ms)
     </script>
 </body>
 </html>
